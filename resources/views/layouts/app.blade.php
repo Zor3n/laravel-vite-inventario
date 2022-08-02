@@ -19,7 +19,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="flex flex-row min-h-screen bg-gray-100">
+    <div class="flex flex-row min-h-screen bg-gray-400">
         <!-- Sidebar layout -->
         @include('layouts.sidebar')
         <!-- Page Content -->
@@ -33,7 +33,7 @@
                 </div>
             </header>
             <!-- Page Content -->
-            <div class="main-content flex flex-col flex-grow p-4">
+            <div class="main-content flex flex-col flex-grow p-4 ">
 
                 {{ $slot }}
             </div>
