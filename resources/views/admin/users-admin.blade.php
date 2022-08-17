@@ -51,6 +51,10 @@
                         </thead>
                         <tbody>
                             @foreach ($users as $user)
+                                <?php
+                                $user_selected = $user;
+                                $user_data = $user->id . ",'" . $user->name . "','" . $user->email . "','" . url('/users') . "'";
+                                ?>
                                 <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700">
                                     <th scope="row"
                                         class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -63,11 +67,15 @@
                                         {{ $user->email }}
                                     </td>
                                     <td class="py-4 px-6">
-                                        <button
+                                        {{-- <button
                                             class="focus:outline-none text-black bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900"
-                                            type="button" data-modal-toggle="edit-modal">
+                                            type="button" data-modal-toggle="edit-modal"
+                                            onclick=" updateFormSettings({{ $user_data }}); ">
                                             {{ __('Editar') }}
-                                        </button>
+                                        </button> --}}
+                                        <a href="{{ route('users.edit', $user) }}"
+                                            class="focus:outline-none text-black bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900"
+                                            type="button">{{ __('Editar') }}</a>
                                     </td>
                                     <td class="py-4 px-6">
                                         <button
@@ -80,56 +88,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <nav class="flex justify-between items-center p-4 bg-white dark:bg-gray-900"
-                        aria-label="Table navigation">
-                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span
-                                class="font-semibold text-gray-200 dark:white">{{ $range_of_results }}</span> of <span
-                                class="font-semibold text-gray-200 dark:white">{{ $max_results }}</span></span>
-                        @if ($max_pages > 1)
-                            <ul class="inline-flex items-center -space-x-px">
-                                @if ($current_page > 1)
-                                    <li>
-                                        <a href=" {{ route('users', ['page' => $current_page - 1]) }} "
-                                            class="block py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                            <span class="sr-only">Previous</span>
-                                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
-                                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                        </a>
-                                    </li>
-                                @endif
-
-
-                                @for ($i = 1; $i < $max_pages + 1; $i++)
-                                    <li>
-                                        <a href=" {{ route('users', ['page' => $i]) }} "
-                                            class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                            {{ $i }}
-                                        </a>
-                                    </li>
-                                @endfor
-
-
-                                @if ($current_page < $max_pages)
-                                    <li>
-                                        <a href="{{ route('users', ['page' => $current_page + 1]) }}"
-                                            class="block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                            <span class="sr-only">Next</span>
-                                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
-                                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                        </a>
-                                    </li>
-                                @endif
-                            </ul>
-                        @endif
-                    </nav>
+                    {{ $users->links() }}
                 </div>
             </div>
         </div>
@@ -153,26 +112,53 @@
                     <span class="sr-only">Close modal</span>
                 </button>
                 <div class="py-6 px-6 lg:px-8">
-                    <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white"> {{ __('Editar usuario') }} </h3>
-                    <form class="space-y-6 flex flex-col" action="#">
+                    <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white"> {{ __('Editar usuario') }}
+                    </h3>
+                    <h3 id="user_id" class="mb-4 text-xl font-medium text-gray-900 dark:text-white hidden"></h3>
+                    <form id="update-form" class="space-y-6 flex flex-col" method="POST">
                         <div>
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                                 {{ __('Nombre:') }}</label>
-                            <input type="text" name="name" id="name"
+                            <input type="text" name="name_edit" id="name_edit"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                placeholder="name@company.com" required>
+                                placeholder="Diego..." required>
                         </div>
 
                         <div>
                             <label for="email"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                                 {{ __('Correo:') }}</label>
-                            <input type="email" name="email" id="email"
+                            <input type="email" name="email_edit" id="email_edit"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                 placeholder="name@company.com" required>
                         </div>
-                        
+
+                        <div>
+                            <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Rol') }}</h3>
+                            <ul
+                                class="w-48 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <li class="w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center pl-3">
+                                        <input checked id="list-radio-license" type="radio" value=""
+                                            name="list-radio"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="list-radio-license"
+                                            class="py-3 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">{{ __('Usuario') }}</label>
+                                    </div>
+                                </li>
+                                <li class="w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center pl-3">
+                                        <input id="list-radio-id" type="radio" value="" name="list-radio"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="list-radio-id"
+                                            class="py-3 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">{{ __('Admin') }}</label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        @method('PUT')
+                        @csrf
                         <button type="submit"
                             class="block self-end focus:outline-none text-black bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900">
                             {{ __('Confirmar') }}</button>
@@ -181,6 +167,9 @@
             </div>
         </div>
     </div>
+
+
+
 
     <!-- Remove modal -->
     <div id="remove-modal" tabindex="-1" aria-hidden="true"
@@ -200,12 +189,17 @@
                     <span class="sr-only">Close modal</span>
                 </button>
                 <div class="p-6 text-center">
-                    <form class="space-y-6 flex flex-col" action="#">
-                        <svg aria-hidden="true" class="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <form class="space-y-6 flex flex-col" action="#" method="">
+                        <svg aria-hidden="true" class="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                         <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                             {{ __('¿Estás seguro de que quieres eliminar este usuario?') }}</h3>
                         </h3>
-                        
+                        @csrf
                         <button type="submit"
                             class="self-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
                             {{ __('Confirmar') }}</button>

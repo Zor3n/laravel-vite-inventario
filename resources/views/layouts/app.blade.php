@@ -19,7 +19,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="flex flex-row min-h-screen bg-gray-400">
+    <div class="flex flex-row min-h-screen bg-gray-100">
         <!-- Sidebar layout -->
         @include('layouts.sidebar')
         <!-- Page Content -->
@@ -67,6 +67,17 @@
             document.getElementById("sidebar-menu").classList.toggle("invisible");
             document.getElementById("main-content").classList.toggle("ml-64");
         }
+    </script>
+
+    <script>
+        // function updateFormSettings(id, current_name, current_email, action){
+        //     document.getElementById("update-form").action = action + "/" + id;
+        //     document.getElementById("name_edit").value = current_name; 
+        //     document.getElementById("email_edit").value = current_email; 
+        //     let row_id = document.getElementById("user_id"); 
+        //     //action_update_form = action;
+        //     row_id.innerHTML = id;
+        // }
     </script>
 </body>
 
